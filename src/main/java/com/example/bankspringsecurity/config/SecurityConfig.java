@@ -34,6 +34,11 @@ public class SecurityConfig {
                 .and()
                 .formLogin().disable()
                 .httpBasic().disable()
+                .exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(403);
+                    response.getWriter().println("error");
+                })
+                .and()
                 .authorizeRequests()
                     .antMatchers("/api/s/**").authenticated()
                     .antMatchers("/api/admin/**").hasRole(UserRole.ADMIN.toString())
