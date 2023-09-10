@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .frameOptions().disable()
                 .and()
                 .csrf().disable()
-                .cors().configurationSource(null)
+                .cors().configurationSource(configurationSource())
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jsessionId를 서버쪽에서 관리 X
                 .and()
@@ -41,7 +41,10 @@ public class SecurityConfig {
                 .and()
                 .build();
     }
+
     public CorsConfigurationSource configurationSource() {
+        log.debug("디버그 : configurationSource cors 설정이 SecurityFilterChain에 등록됨");
+
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
