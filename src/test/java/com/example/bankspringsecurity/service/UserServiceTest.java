@@ -2,9 +2,9 @@ package com.example.bankspringsecurity.service;
 
 import com.example.bankspringsecurity.domain.user.User;
 import com.example.bankspringsecurity.domain.user.UserRepository;
-import com.example.bankspringsecurity.domain.user.UserRole;
 import com.example.bankspringsecurity.dto.JoinRequest;
 import com.example.bankspringsecurity.dto.JoinResponse;
+import com.example.bankspringsecurity.stub.UserStub;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,9 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,16 +38,7 @@ class UserServiceTest {
     void signUpTest() {
         // given
         JoinRequest request = new JoinRequest("kim", "1234", "kim@naver.com", "김");
-        User user = User.builder()
-                .id(1L)
-                .username("kim")
-                .password("1234")
-                .email("kim@naver.com")
-                .fullName("김")
-                .role(UserRole.CUSTOMER)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+        User user = UserStub.create(1L, "kim", "김");
 
         given(userRepository.findByUsername(any()))
                 .willReturn(Optional.empty());
