@@ -1,5 +1,6 @@
-package com.example.bankspringsecurity.config;
+package com.example.bankspringsecurity.config.security;
 
+import com.example.bankspringsecurity.config.jwt.JwtAuthenticationFilter;
 import com.example.bankspringsecurity.domain.user.UserRole;
 import com.example.bankspringsecurity.dto.ResponseDto;
 import com.example.bankspringsecurity.util.CustomResponseUtil;
@@ -7,7 +8,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -37,6 +40,8 @@ public class SecurityConfig {
                 .and()
                 .formLogin().disable()
                 .httpBasic().disable()
+                .apply(new CustomSecurityFilterManager())
+                .and()
                 .exceptionHandling().authenticationEntryPoint((request, response, authException) ->
                     CustomResponseUtil.unAuthentication(response, "로그인을 진행해 주세요")
                 )

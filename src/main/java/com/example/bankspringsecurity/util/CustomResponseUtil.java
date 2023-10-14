@@ -15,7 +15,7 @@ public class CustomResponseUtil {
     public static void success(HttpServletResponse response, Object dto) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            ResponseDto<?> responseDto = new ResponseDto<>(-1, "로그인 성공", dto);
+            ResponseDto<?> responseDto = new ResponseDto<>(1, "로그인 성공", dto);
 
             String responseBody = mapper.writeValueAsString(responseDto);
 

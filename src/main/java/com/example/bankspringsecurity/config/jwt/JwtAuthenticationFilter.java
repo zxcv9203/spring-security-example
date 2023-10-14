@@ -5,6 +5,7 @@ import com.example.bankspringsecurity.dto.LoginRequest;
 import com.example.bankspringsecurity.dto.LoginResponse;
 import com.example.bankspringsecurity.util.CustomResponseUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,8 +19,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
@@ -30,6 +32,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     // POST /api/login
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        log.debug("디버그 : attemptAuthentication 호출됨");
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             LoginRequest loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
@@ -51,6 +54,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     // return authentication 이 잘 동작하면 해당 메서드 호출
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+        log.debug("디버그 : successfulAuthentication 호출됨");
+
         LoginUser loginUser = (LoginUser) authResult.getPrincipal();
         String jwtToken = JwtProcess.create(loginUser);
         response.addHeader(JwtVO.HEADER, jwtToken);
