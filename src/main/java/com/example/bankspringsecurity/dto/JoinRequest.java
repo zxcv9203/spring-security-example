@@ -2,12 +2,14 @@ package com.example.bankspringsecurity.dto;
 
 import com.example.bankspringsecurity.domain.user.User;
 import com.example.bankspringsecurity.domain.user.UserRole;
+import lombok.Builder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+@Builder
 public record JoinRequest(
         @Pattern(regexp = "^[a-zA-Z0-9]{2,20}$", message = "영문/숫자 2 ~ 20자 이내로 작성해주세요.")
         @NotEmpty
