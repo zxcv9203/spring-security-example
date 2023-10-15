@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             // 이 세션의 유효기간은 request하고, response 하면 끝남
             return authenticationManager.authenticate(authenticationToken);
         } catch (Exception e) {
-            // authenticationEntryPoint에 걸림
+            // unsuccessfulAuthentication 호출
             throw new InternalAuthenticationServiceException(e.getMessage());
         }
     }
@@ -62,5 +62,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         LoginResponse loginResponse = LoginResponse.from(loginUser.getUser());
         CustomResponseUtil.success(response, loginResponse);
+    }
+
+    // 로그인 실패
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        CustomResponseUtil.unAuthentication(response, "로그인 실패");
     }
 }
