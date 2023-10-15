@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -43,12 +44,15 @@ public class SecurityConfig {
                 .apply(new CustomSecurityFilterManager())
                 .and()
                 .exceptionHandling().authenticationEntryPoint((request, response, authException) ->
-                    CustomResponseUtil.unAuthentication(response, "로그인을 진행해 주세요")
+                    CustomResponseUtil.fail(response, "로그인을 진행해 주세요", HttpStatus.UNAUTHORIZED)
+                )
+                .accessDeniedHandler((request, response, e) ->
+                    CustomResponseUtil.fail(response, "권한이 부족합니다.", HttpStatus.FORBIDDEN)
                 )
                 .and()
                 .authorizeRequests()
                     .antMatchers("/api/s/**").authenticated()
-                    .antMatchers("/api/admin/**").hasRole(UserRole.ADMIN.toString())
+                    .antMatchers("/api/admin/**").hasRole("" + UserRole.ADMIN)
                     .anyRequest().permitAll()
                 .and()
                 .build();

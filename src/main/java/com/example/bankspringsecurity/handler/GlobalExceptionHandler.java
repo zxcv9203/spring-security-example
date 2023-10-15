@@ -2,6 +2,7 @@ package com.example.bankspringsecurity.handler;
 
 import com.example.bankspringsecurity.dto.ResponseDto;
 import com.example.bankspringsecurity.exception.CustomApiException;
+import com.example.bankspringsecurity.exception.CustomForbiddenException;
 import com.example.bankspringsecurity.exception.CustomValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(
                 new ResponseDto<>(-1, e.getMessage(), null),
                 HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(CustomForbiddenException.class)
+    public ResponseEntity<ResponseDto<Void>> handleForbiddenException(CustomForbiddenException e) {
+        log.error(e.getMessage());
+
+        return new ResponseEntity<>(
+                new ResponseDto<>(-1, e.getMessage(), null),
+                HttpStatus.FORBIDDEN
         );
     }
 
