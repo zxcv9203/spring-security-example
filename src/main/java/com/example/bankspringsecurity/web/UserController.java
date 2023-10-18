@@ -2,7 +2,7 @@ package com.example.bankspringsecurity.web;
 
 import com.example.bankspringsecurity.dto.JoinRequest;
 import com.example.bankspringsecurity.dto.JoinResponse;
-import com.example.bankspringsecurity.dto.ResponseDto;
+import com.example.bankspringsecurity.dto.ApiResponse;
 import com.example.bankspringsecurity.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,14 +22,14 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/join")
-    public ResponseEntity<ResponseDto<JoinResponse>> join(
+    public ResponseEntity<ApiResponse<JoinResponse>> join(
             @RequestBody @Valid JoinRequest request,
             BindingResult bindingResult
     ) {
         JoinResponse response = userService.signUp(request);
 
         return new ResponseEntity<>(
-                new ResponseDto<>(1, "회원가입 성공", response),
+                new ApiResponse<>(1, "회원가입 성공", response),
                 HttpStatus.CREATED
         );
     }

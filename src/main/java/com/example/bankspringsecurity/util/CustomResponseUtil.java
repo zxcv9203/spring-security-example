@@ -1,6 +1,6 @@
 package com.example.bankspringsecurity.util;
 
-import com.example.bankspringsecurity.dto.ResponseDto;
+import com.example.bankspringsecurity.dto.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -16,9 +16,9 @@ public class CustomResponseUtil {
     public static void success(HttpServletResponse response, Object dto) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            ResponseDto<?> responseDto = new ResponseDto<>(1, "로그인 성공", dto);
+            ApiResponse<?> apiResponse = new ApiResponse<>(1, "로그인 성공", dto);
 
-            String responseBody = mapper.writeValueAsString(responseDto);
+            String responseBody = mapper.writeValueAsString(apiResponse);
 
             response.setContentType("application/json; charset=utf-8");
             response.setStatus(200);
@@ -31,9 +31,9 @@ public class CustomResponseUtil {
     public static void fail(HttpServletResponse response, String msg, HttpStatus status) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            ResponseDto<?> responseDto = new ResponseDto<>(-1, msg, null);
+            ApiResponse<?> apiResponse = new ApiResponse<>(-1, msg, null);
 
-            String responseBody = mapper.writeValueAsString(responseDto);
+            String responseBody = mapper.writeValueAsString(apiResponse);
 
             response.setContentType("application/json; charset=utf-8");
             response.setStatus(status.value());
