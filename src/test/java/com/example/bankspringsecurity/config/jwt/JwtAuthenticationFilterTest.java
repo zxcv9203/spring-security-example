@@ -60,9 +60,6 @@ class JwtAuthenticationFilterTest {
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(requestBody)
         );
-        String responseBody = resultActions.andReturn()
-                .getResponse()
-                .getContentAsString();
         String jwtToken = resultActions.andReturn()
                 .getResponse()
                 .getHeader(JwtVO.HEADER);
