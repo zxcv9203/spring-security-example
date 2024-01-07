@@ -50,6 +50,6 @@ class AccountServiceTest {
         AccountSaveResponse response = accountService.register(request, userId);
 
         // then
-        assertThat(request.number()).isEqualTo(1111L);
+        assertThat(response.number()).isEqualTo(1111L);
     }
 }
