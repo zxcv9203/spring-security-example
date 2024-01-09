@@ -42,7 +42,7 @@ public class AccountService {
         return AccountSaveResponse.from(account);
     }
 
-    public AccountsResponse findByUserId(Long userId) {
+    public AccountsResponse findById(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomApiException("유저를 찾을 수 없습니다."));
 
