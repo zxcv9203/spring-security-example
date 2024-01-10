@@ -1,5 +1,6 @@
 package com.example.bankspringsecurity.service;
 
+import com.example.bankspringsecurity.domain.account.Account;
 import com.example.bankspringsecurity.domain.account.AccountRepository;
 import com.example.bankspringsecurity.domain.user.User;
 import com.example.bankspringsecurity.domain.user.UserRepository;
@@ -19,6 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class AccountServiceTest {
@@ -51,5 +54,19 @@ class AccountServiceTest {
 
         // then
         assertThat(response.number()).isEqualTo(1111L);
+    }
+
+    @Test
+    void 계좌삭제_test() throws Exception {
+        Long number = 1111L;
+        Long userId = 1L;
+
+        User user = UserStub.create(1L, "kim", "yongcheol-kim");
+        Account account = AccountStub.newAccount(1L, user);
+        given(accountRepository.findByNumber(any())).willReturn(Optional.of(account));
+
+        accountService.deleteById(userId, number);
+
+        verify(accountRepository, times(1)).deleteById(any());
     }
 }
