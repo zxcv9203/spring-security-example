@@ -1,6 +1,7 @@
 package com.example.bankspringsecurity.domain.account;
 
 import com.example.bankspringsecurity.domain.user.User;
+import com.example.bankspringsecurity.exception.CustomApiException;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "account")
@@ -51,5 +53,11 @@ public class Account {
         this.user = user;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public void checkOwner(Long userId) {
+        if (!Objects.equals(user.getId(), userId)) {
+            throw new CustomApiException("계좌 소유자가 아닙니다.");
+        }
     }
 }

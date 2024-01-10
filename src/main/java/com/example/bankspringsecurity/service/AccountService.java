@@ -54,4 +54,14 @@ public class AccountService {
 
         return new AccountsResponse(user.getFullName(), accounts);
     }
+
+    @Transactional
+    public void deleteById(Long userId, Long number) {
+        Account account = accountRepository.findByNumber(number)
+                .orElseThrow(() -> new CustomApiException("계좌를 찾을 수 없습니다."));
+
+        account.checkOwner(userId);
+
+        accountRepository.deleteById(account.getId());
+    }
 }
