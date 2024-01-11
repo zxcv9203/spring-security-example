@@ -1,8 +1,12 @@
 package com.example.bankspringsecurity.web;
 
+import com.example.bankspringsecurity.domain.account.Account;
+import com.example.bankspringsecurity.domain.account.AccountRepository;
 import com.example.bankspringsecurity.domain.user.User;
 import com.example.bankspringsecurity.domain.user.UserRepository;
 import com.example.bankspringsecurity.dto.AccountSaveRequest;
+import com.example.bankspringsecurity.exception.CustomApiException;
+import com.example.bankspringsecurity.stub.AccountStub;
 import com.example.bankspringsecurity.stub.UserStub;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +23,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -38,10 +47,21 @@ class AccountControllerTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
+    private EntityManager entityManager;
+
     @BeforeEach
     public void setUp() {
         User user = UserStub.create(1L, "kim", "kim");
         userRepository.save(user);
+        userRepository.save(UserStub.create(2L, "park", "park"));
+
+        accountRepository.save(AccountStub.newAccount(1111L, user));
+
+        entityManager.clear();
     }
 
     @Test
@@ -60,5 +80,16 @@ class AccountControllerTest {
 
         // then
         resultActions.andExpect(status().isCreated());
+    }
+
+    @Test
+    @WithUserDetails(value = "kim", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void deleteAccountTest() throws Exception {
+        Long number = 1111L;
+
+        ResultActions resultActions = mvc.perform(delete("/api/s/accounts/{number}", number));
+
+        // JUnit 테스트에서 delete 쿼리는 가장 마지막에 실행되면 발생안함
+        assertThat(accountRepository.findByNumber(number)).isEmpty();
     }
 }
