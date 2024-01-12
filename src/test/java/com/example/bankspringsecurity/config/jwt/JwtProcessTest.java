@@ -11,29 +11,33 @@ class JwtProcessTest {
 
     @Test
     void createTest() {
-        // given
-        User user = User.builder()
-                .id(1L)
-                .role(UserRole.CUSTOMER)
-                .build();
-        LoginUser loginUser = new LoginUser(user);
-
         // when
-        String jwtToken = JwtProcess.create(loginUser);
+        String jwtToken = createToken();
 
         // then
-        assertThat(jwtToken.startsWith(JwtVO.TOKEN_PREFIX)).isTrue();
+        assertThat(jwtToken).startsWith(JwtVO.TOKEN_PREFIX);
     }
 
     @Test
     void verifyTest() {
         // given
-        String jwtToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYW5rIiwiZXhwIjoxNzAyMzIwNDU4LCJpZCI6MSwicm9sZSI6IkNVU1RPTUVSIn0.QEdRw8H6_gY0eeED4_2HLg1EtQJ4xiBC5EP78jLxjiN5j2jbAzPEswETM6P4cnjeDiNMFgFnvnyaiya6q1aoeQ";
+        String token = createToken();
+        String jwtToken = token.replace(JwtVO.TOKEN_PREFIX, "");
 
         // when
         LoginUser loginUser = JwtProcess.verify(jwtToken);
 
         // then
         assertThat(loginUser.getUser().getId()).isEqualTo(1L);
+    }
+
+    private String createToken() {
+        User user = User.builder()
+                .id(1L)
+                .role(UserRole.CUSTOMER)
+                .build();
+        LoginUser loginUser1 = new LoginUser(user);
+
+        return JwtProcess.create(loginUser1);
     }
 }
