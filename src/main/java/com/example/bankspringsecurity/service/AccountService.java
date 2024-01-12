@@ -2,12 +2,12 @@ package com.example.bankspringsecurity.service;
 
 import com.example.bankspringsecurity.domain.account.Account;
 import com.example.bankspringsecurity.domain.account.AccountRepository;
+import com.example.bankspringsecurity.domain.transaction.Transaction;
+import com.example.bankspringsecurity.domain.transaction.TransactionRepository;
+import com.example.bankspringsecurity.domain.transaction.TransactionType;
 import com.example.bankspringsecurity.domain.user.User;
 import com.example.bankspringsecurity.domain.user.UserRepository;
-import com.example.bankspringsecurity.dto.AccountResponse;
-import com.example.bankspringsecurity.dto.AccountSaveRequest;
-import com.example.bankspringsecurity.dto.AccountSaveResponse;
-import com.example.bankspringsecurity.dto.AccountsResponse;
+import com.example.bankspringsecurity.dto.*;
 import com.example.bankspringsecurity.exception.CustomApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +23,8 @@ public class AccountService {
     private final AccountRepository accountRepository;
 
     private final UserRepository userRepository;
+
+    private final TransactionRepository transactionRepository;
 
     @Transactional
     public AccountSaveResponse register(AccountSaveRequest request, Long userId) {
@@ -63,5 +65,41 @@ public class AccountService {
         account.checkOwner(userId);
 
         accountRepository.deleteById(account.getId());
+    }
+
+    @Transactional
+    public AccountDepositResponse deposit(AccountDepositRequest request) {
+        // 0원 체크
+        if (request.amount() <= 0L) {
+            throw new CustomApiException("0원 이하의 금액을 입금할 수 없습니다.");
+        }
+
+        // 임금계좌 확인
+        Account account = accountRepository.findByNumber(request.number())
+                .orElseThrow(() -> new CustomApiException("계좌를 찾을 수 없습니다."));
+
+        // 입금
+        account.deposit(request.amount());
+
+        // 거래 내역 남기기
+        Transaction transaction = Transaction.builder()
+                .depositAccount(account)
+                .withdrawAccount(null)
+                .depositAccountBalance(account.getBalance())
+                .withdrawAccountBalance(null)
+                .amount(request.amount())
+                .type(TransactionType.DEPOSIT)
+                .sender("ATM")
+                .receiver(request.number() + "")
+                .phoneNumber(request.phoneNumber())
+                .build();
+
+        Transaction savedTransaction = transactionRepository.save(transaction);
+
+        return AccountDepositResponse.builder()
+                .id(account.getId())
+                .number(account.getNumber())
+                .transaction(TransactionResponse.convertResponse(savedTransaction))
+                .build();
     }
 }
