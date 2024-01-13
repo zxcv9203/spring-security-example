@@ -1,11 +1,7 @@
 package com.example.bankspringsecurity.web;
 
 import com.example.bankspringsecurity.config.auth.LoginUser;
-import com.example.bankspringsecurity.dto.AccountSaveRequest;
-import com.example.bankspringsecurity.dto.AccountSaveResponse;
-import com.example.bankspringsecurity.dto.AccountsResponse;
-import com.example.bankspringsecurity.dto.ApiResponse;
-import com.example.bankspringsecurity.exception.CustomForbiddenException;
+import com.example.bankspringsecurity.dto.*;
 import com.example.bankspringsecurity.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +11,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
@@ -49,5 +44,14 @@ public class AccountController {
     ) {
         accountService.deleteById(loginUser.getUser().getId(), number);
         return new ResponseEntity<>(new ApiResponse<>(1, "", null), HttpStatus.OK);
+    }
+
+    @PostMapping("/accounts/deposit")
+    public ResponseEntity<ApiResponse<AccountDepositResponse>> deposit(
+            @RequestBody @Valid AccountDepositRequest request
+    ) {
+        AccountDepositResponse response = accountService.deposit(request);
+
+        return new ResponseEntity<>(new ApiResponse<>(1, "계좌 입금 완료", response), HttpStatus.CREATED);
     }
 }
