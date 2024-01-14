@@ -4,6 +4,7 @@ import com.example.bankspringsecurity.domain.transaction.Transaction;
 import com.example.bankspringsecurity.util.CustomDateUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
+import lombok.ToString;
 
 public record TransactionResponse(
         Long id,
